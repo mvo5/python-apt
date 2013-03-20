@@ -1,3 +1,10 @@
+python-apt (0.8.9~exp3) UNRELEASEDexperimental; urgency=low
+
+  [ Matthias Klose ]
+  * Make python{,3}-apt{,-dbg} Multi-Arch: allowed. LP: #1130709.
+
+ -- Michael Vogt <mvo@debian.org>  Wed, 20 Mar 2013 09:11:39 +0100
+
 python-apt (0.8.9~exp2) experimental; urgency=low
 
   * apt/package.py:

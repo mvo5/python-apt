@@ -3,6 +3,9 @@ python-apt (0.9.2) UNRELEASED; urgency=low
   * apt/cache.py:
     - when using apt.Cache(rootdir=/some/dir) only read the APT
       configuration from this rootdir instead of /etc (closes: #728274)
+    - Fixed PEP8 and pyflakes issues
+  * apt/package.py:
+    - Fixed PEP8 and pyflakes issues
 
  -- Michael Vogt <michael.vogt@ubuntu.com>  Sat, 23 Nov 2013 08:49:51 +0100
 

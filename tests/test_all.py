@@ -11,6 +11,7 @@ import sys
 try:
     import unittest.runner
     import unittest
+    unittest  # pyflakes
 except ImportError:
     # py2.6 compat
     import unittest2 as unittest

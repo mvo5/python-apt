@@ -15,6 +15,8 @@ import unittest
 if sys.version_info[0] > 2:
     from http.server import HTTPServer
     from http.server import SimpleHTTPRequestHandler as HTTPRequestHandler
+    HTTPServer  # pyflakes
+    HTTPRequestHandler  # pyflakes
 else:
     from BaseHTTPServer import HTTPServer
     from SimpleHTTPServer import SimpleHTTPRequestHandler as HTTPRequestHandler
@@ -22,6 +24,7 @@ else:
 
 if sys.version_info[0] == 2 and sys.version_info[1] == 6:
     from unittest2 import TestCase
+    TestCase  # pyflakes
 else:
     from unittest import TestCase
 

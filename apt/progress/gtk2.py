@@ -27,6 +27,7 @@ pygtk.require('2.0')
 import gtk
 try:
     import glib
+    glib  # pyflakes
 except ImportError:
     import gobject as glib
 import gobject

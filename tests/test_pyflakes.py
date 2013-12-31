@@ -1,11 +1,6 @@
 #!/usr/bin/python3
 # -*- Mode: Python; indent-tabs-mode: nil; tab-width: 4; coding: utf-8 -*-
 
-# Partly based on a script from Review Board, MIT license; but modified to
-# act as a unit test.
-
-from __future__ import print_function
-
 import os
 import subprocess
 import unittest
@@ -38,6 +33,7 @@ class TestPyflakesClean(unittest.TestCase):
         res = subprocess.call(cmd)
         if res != 0:
             self.fail("pyflakes failed with: %s" % res)
+
 
 if __name__ == "__main__":
     import logging

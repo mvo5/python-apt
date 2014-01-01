@@ -15,7 +15,8 @@ class PackagePep8TestCase(unittest.TestCase):
              #"--ignore=E125,E126,E127,E128",
              "--exclude", "build,tests/old",
              "--repeat", py_dir])
-        self.assertEqual(res, 0)
+        if res != 0:
+            self.fail("pep8 failed with: %s" % res)
 
 
 if __name__ == "__main__":

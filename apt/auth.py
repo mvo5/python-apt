@@ -141,14 +141,14 @@ def _add_key_from_keyserver(keyid, keyserver, tmp_keyring_dir):
         "gpg",
         "--no-default-keyring", "--no-options",
         "--homedir", tmp_keyring_dir,
-        ]
+    ]
     # download the key to a temp keyring first
     res = subprocess.call(gpg_default_options + [
         "--secret-keyring", tmp_secret_keyring,
         "--keyring", tmp_keyring,
         "--keyserver", keyserver,
         "--recv", keyid,
-        ])
+    ])
     if res != 0:
         raise AptKeyError("recv from '%s' failed for '%s'" % (
             keyserver, keyid))
@@ -159,7 +159,7 @@ def _add_key_from_keyserver(keyid, keyserver, tmp_keyring_dir):
         "--keyring", tmp_keyring,
         "--output", tmp_export_keyring,
         "--export", keyid,
-        ])
+    ])
     if res != 0:
         raise AptKeyError("export of '%s' failed", keyid)
     # now verify the fingerprint, this is probably redundant as we
@@ -171,9 +171,9 @@ def _add_key_from_keyserver(keyid, keyserver, tmp_keyring_dir):
             "--fingerprint",
             "--batch",
             "--with-colons",
-            ],
-            stdout=subprocess.PIPE,
-            universal_newlines=True).communicate()[0]
+        ],
+        stdout=subprocess.PIPE,
+        universal_newlines=True).communicate()[0]
     got_fingerprint = None
     for line in output.splitlines():
         if line.startswith("fpr:"):

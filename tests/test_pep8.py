@@ -12,7 +12,7 @@ class PackagePep8TestCase(unittest.TestCase):
             ["pep8",
              # disable some indent releated checks that are a bit over the
              # top (IMHO)
-             #"--ignore=E125,E126,E127,E128",
+             "--ignore=E125,E126,E127,E128",
              "--exclude", "build,tests/old",
              "--repeat", py_dir])
         if res != 0:

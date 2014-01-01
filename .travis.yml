@@ -1,12 +1,9 @@
-language: python
+language: c
 before_install:
  - sudo apt-get update -q
  - sudo apt-get install distro-info
- - echo "deb http://archive.ubuntu.com/ubuntu $(distro-info --devel) main"|sudo tee -a /etc/apt/sources.list.d/trusty.list
- - sudo apt-get update -q
- - sudo apt-get install apt libapt-pkg-dev
- - sudo rm /etc/apt/sources.list.d/trusty.list
+ - echo "deb http://archive.ubuntu.com/ubuntu $(distro-info --stable) main"|sudo tee -a /etc/apt/sources.list.d/trusty.list
  - sudo apt-get update -q
  - sudo apt-get install -q --no-install-recommends gdebi-core
- - sudo apt-get install $(gdebi -q --apt-line ./debian/control)
-script: ./debian/rules binary
+ - sudo apt-get install build-essential $(gdebi -q --apt-line ./debian/control)
+script: ./debian/rules build-arch

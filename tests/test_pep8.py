@@ -10,8 +10,12 @@ class PackagePep8TestCase(unittest.TestCase):
         py_dir = os.path.join(os.path.dirname(__file__), "..")
         res += subprocess.call(
             ["pep8",
-             # disable some indent releated checks that are a bit over the
-             # top (IMHO)
+             # disable for now:
+             # E125 continuation line does not distinguish itself from
+             #      next logical line
+             # E126 continuation line over-indented for hanging indent
+             # E127 continuation line over-indented for visual indent
+             # E128 continuation line under-indented for visual indent
              "--ignore=E125,E126,E127,E128",
              "--exclude", "build,tests/old",
              "--repeat", py_dir])

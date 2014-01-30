@@ -257,6 +257,14 @@ class TestAptCache(TestCase):
         arches = apt_pkg.get_architectures()
         self.assertTrue(main_arch in arches)
 
+    def test_get_unauthenticated_packages(self):
+        # there is no Release{,.gpg} in this testdir
+        cache = apt.Cache(rootdir="./data/test-provides/")
+        cache["postfix"].mark_install()
+        self.assertEqual(len(cache.get_pending_unauthenticated()), 1)
+        with self.assertRaises(apt.cache.UnauthenticatedPackagesException):
+            cache.commit()
+
 
 if __name__ == "__main__":
     unittest.main()

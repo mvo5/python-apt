@@ -29,6 +29,10 @@ from apt_pkg import gettext as _
 import apt.progress.text
 
 
+class UnauthenticatedPackagesException(Exception):
+    """Exception that is thrown if there are unauthenticated packages."""
+
+
 class FetchCancelledException(IOError):
     """Exception that is thrown when the user cancels a fetch operation."""
 
@@ -229,6 +233,17 @@ class Cache(object):
 
     def keys(self):
         return list(self._set)
+
+    def get_pending_unauthenticated(self):
+        """ Get list of pending package that are unauthenticated """
+        unauthenticated = []
+        for pkg in self.get_changes():
+            if not (pkg.marked_install or pkg.marked_upgrade):
+                continue
+            if not any(
+                    [origin.trusted for origin in pkg.candidate.origins]):
+                unauthenticated.append(pkg)
+        return unauthenticated
 
     def get_changes(self):
         """ Get the marked changes """
@@ -470,7 +485,8 @@ class Cache(object):
             install_progress.finish_update()
         return res
 
-    def commit(self, fetch_progress=None, install_progress=None):
+    def commit(self, fetch_progress=None, install_progress=None,
+               allow_unauthenticated=False):
         """Apply the marked changes to the cache.
 
         The first parameter, *fetch_progress*, refers to a FetchProgress()
@@ -480,6 +496,14 @@ class Cache(object):
         The second parameter, *install_progress*, is a
         apt.progress.InstallProgress() object.
         """
+        if (allow_unauthenticated is False and
+                self.get_pending_unauthenticated() > 0):
+            raise UnauthenticatedPackagesException(
+                "The packages '%s' can not be authenticated, pass "
+                "'allow_unauthenticated' to commit() to override this" %
+                ",".join(
+                    [pkg.name for pkg in self.get_pending_unauthenticated()]))
+
         # FIXME:
         # use the new acquire/pkgmanager interface here,
         # raise exceptions when a download or install fails

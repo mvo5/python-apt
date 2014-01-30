@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 09:20+0100\n"
+"POT-Creation-Date: 2014-01-30 16:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -658,6 +658,6 @@ msgstr ""
 msgid "Please insert a Disc in the drive and press enter"
 msgstr ""
 
-#: ../apt/cache.py:164
+#: ../apt/cache.py:168
 msgid "Building data structures"
 msgstr ""

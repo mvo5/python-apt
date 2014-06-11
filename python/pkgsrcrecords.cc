@@ -8,6 +8,9 @@
    ##################################################################### */
 									/*}}}*/
 // Include Files							/*{{{*/
+
+#include "config.h"
+
 #include "generic.h"
 #include "apt_pkgmodule.h"
 
@@ -75,6 +78,7 @@ static PyObject *PkgSrcRecordsRestart(PyObject *Self,PyObject *Args)
    return HandleErrors(Py_None);
 }
 
+#if HAVE_PKGSRCRECORDS_STEP
 static char *doc_PkgSrcRecordsStep =
     "step() -> bool\n\n"
     "Go to the source package. Each call moves\n"
@@ -97,12 +101,15 @@ static PyObject *PkgSrcRecordsStep(PyObject *Self,PyObject *Args)
 
    return PyBool_FromLong(1);
 }
+#endif
 
 static PyMethodDef PkgSrcRecordsMethods[] =
 {
    {"lookup",PkgSrcRecordsLookup,METH_VARARGS,doc_PkgSrcRecordsLookup},
    {"restart",PkgSrcRecordsRestart,METH_VARARGS,doc_PkgSrcRecordsRestart},
+#if HAVE_PKGSRCRECORDS_STEP
    {"step",PkgSrcRecordsStep,METH_VARARGS,doc_PkgSrcRecordsStep},
+#endif
    {}
 };
 

@@ -8,6 +8,22 @@ import sys
 from distutils.core import setup, Extension
 cmdclass = {}
 
+CONFIG_H_TESTS = (
+    ("const Parser* Step();", "/usr/include/apt-pkg/srcrecords.h", "HAVE_PKGSRCRECORDS_STEP"),
+)
+
+def generate_config_h():
+    config_h = os.path.join(os.path.dirname(__file__), "python", "config.h")
+    with open(config_h, "w") as f:
+        f.write("/* THIS FILE IS AUTO GENERATED - DO NOT EDIT */\n")
+        for needle, include, define in CONFIG_H_TESTS:
+            f.write("#define %s " % define)
+            if needle in open(include).read():
+                f.write("1\n")
+            else:
+                f.write("0\n")
+
+
 try:
     from DistUtilsExtra.command import build_extra, build_i18n
     from DistUtilsExtra.auto import clean_build_tree
@@ -41,6 +57,7 @@ apt_inst = Extension("apt_inst", files, libraries=["apt-pkg", "apt-inst"])
 
 # Replace the leading _ that is used in the templates for translation
 if len(sys.argv) > 1 and sys.argv[1] == "build":
+    generate_config_h()
     if not os.path.exists("build/data/templates/"):
         os.makedirs("build/data/templates")
     for template in glob.glob('data/templates/*.info.in'):

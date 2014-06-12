@@ -150,13 +150,23 @@ class InstallProgress(object):
         fcntl.fcntl(self.statusfd, fcntl.F_SETFL, os.O_NONBLOCK)
 
     def start_update(self):
-        """(Abstract) Start update."""
+        """(Abstract) Start install."""
 
     def finish_update(self):
-        """(Abstract) Called when update has finished."""
+        """(Abstract) Always called when the install has finished.
+
+        This function is always called regardless of success/failure
+        of the install operation. Its commonly used for cleanups.
+        """
 
     def error(self, pkg, errormsg):
-        """(Abstract) Called when a error is detected during the install."""
+        """(Abstract) Called when a error is detected during the install.
+
+        This function is used to report errors found by dpkg with specific
+        packages. The parameter pkg contains the package name or the path
+        to the deb package. The error message is a (translated) error string
+        from dpkg.
+        """
 
     def conffile(self, current, new):
         """(Abstract) Called when a conffile question from dpkg is detected."""

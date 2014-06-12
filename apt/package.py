@@ -1103,6 +1103,7 @@ class Package(object):
         self._pcache.cache_pre_change()
         self._pcache._depcache.mark_keep(self._pkg)
         self._pcache.cache_post_change()
+        return self.marked_keep
 
     def mark_delete(self, auto_fix=True, purge=False):
         """Mark a package for deletion.
@@ -1124,6 +1125,7 @@ class Package(object):
             fix.install_protect()
             fix.resolve()
         self._pcache.cache_post_change()
+        return self.marked_delete
 
     def mark_install(self, auto_fix=True, auto_inst=True, from_user=True):
         """Mark a package for install.
@@ -1148,6 +1150,7 @@ class Package(object):
             fixer.protect(self._pkg)
             fixer.resolve(True)
         self._pcache.cache_post_change()
+        return self.marked_install
 
     def mark_upgrade(self, from_user=True):
         """Mark a package for upgrade."""
@@ -1159,6 +1162,7 @@ class Package(object):
             # FIXME: we may want to throw a exception here
             sys.stderr.write(("MarkUpgrade() called on a non-upgrable pkg: "
                               "'%s'\n") % self._pkg.name)
+        return self.marked_ugprade
 
     def mark_auto(self, auto=True):
         """Mark a package as automatically installed.

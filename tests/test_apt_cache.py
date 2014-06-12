@@ -45,6 +45,52 @@ def get_open_file_descriptors():
     return set(map(int, fds))
 
 
+def add_package_to_fake_apt_rootdir(rootdir, package_name, additional={}):
+    lists_files = glob.glob(
+        os.path.join(rootdir, "var", "lib", "apt",
+                     "lists","*Packages"))
+    with open(lists_files[0], "a") as f:
+        f.write("""Package: {name}
+Priority: optional
+Section: gnome
+Installed-Size: 941
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Version: 1.0
+Filename: pool/main/f/{name}/{name}_1.0_i386.deb
+Size: 8892
+MD5sum: 5d4653eb83a5edb24d1ece7e98723a60
+SHA1: 55f29d3d61f22e01af646b96520f01b054596ea9
+SHA256: ebcd447b86ef0f227fd82f14f8e817b60b5285533a625535c937066de04e6564
+Description: Messaging account plugin for AIM
+Description-md5: 1a2069e5dd5f4777061642b2d7c9a76a
+""".format(name=package_name))
+        for key, value in additional.items():
+            f.write("{}: {}\n".format(key, value))
+        f.write("\n\n")
+
+
+def make_fake_apt_rootdir(arch="i386"):
+    """Create a tempdir with a aptroot suitable for apt.Cache(rootdir=dir)
+
+    The caller is responsible to cleanup the directory (e.g. via addCleanup)
+    """
+    apt.apt_pkg.config.set("Apt::architecture", arch)
+    tmpdir = tempfile.mkdtemp()
+    os.makedirs(os.path.join(tmpdir, "etc", "apt"))
+    os.makedirs(os.path.join(tmpdir, "var", "lib", "apt", "lists"))
+    sources = os.path.join(tmpdir, "etc", "apt", "sources.list")
+    with open(sources, "w") as f:
+        f.write("deb http://archive.ubuntu.com/ubuntu utopic main\n")
+    lists = os.path.join(
+        tmpdir, "var", "lib", "apt", "lists",
+        "archive.ubuntu.com_ubuntu_dists_utopic_main_binary-i386_Packages")
+    with open(lists, "w") as f:
+            pass
+    add_package_to_fake_apt_rootdir(tmpdir, "foo")
+    return tmpdir
+
+
 class TestAptCache(unittest.TestCase):
     """ test the apt cache """
 
@@ -57,6 +103,7 @@ class TestAptCache(unittest.TestCase):
             self._cnf[item] = apt_pkg.config.find(item)
         apt_pkg.config.clear("APT::Update::Post-Invoke")
         apt_pkg.config.clear("APT::Update::Post-Invoke-Success")
+        apt.apt_pkg.config.clear("DPkg::Post-Invoke")
 
     def tearDown(self):
         for item in self._cnf:
@@ -250,6 +297,25 @@ class TestAptCache(unittest.TestCase):
         main_arch = apt.apt_pkg.config.get("APT::Architecture")
         arches = apt_pkg.get_architectures()
         self.assertTrue(main_arch in arches)
+
+    def test_mark_bool_simple(self):
+        tmp_aptroot = make_fake_apt_rootdir()
+        self.addCleanup(shutil.rmtree, tmp_aptroot)
+        cache = apt.Cache(rootdir=tmp_aptroot)
+        # we can install/keep it
+        self.assertEqual(cache["foo"].mark_install(), True)
+        self.assertEqual(cache["foo"].mark_keep(), True)
+        # but we can't remove it as its not installed
+        self.assertEqual(cache["foo"].mark_delete(), False)
+
+    def test_mark_bool_install_impossible(self):
+        tmp_aptroot = make_fake_apt_rootdir()
+        self.addCleanup(shutil.rmtree, tmp_aptroot)
+        add_package_to_fake_apt_rootdir(
+            tmp_aptroot, "impossible", {'Depends': 'not-there'})
+        cache = apt.Cache(rootdir=tmp_aptroot)
+        # we can not install it
+        self.assertEqual(cache["impossible"].mark_install(), False)
 
 
 if __name__ == "__main__":

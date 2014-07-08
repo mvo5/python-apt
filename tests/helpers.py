@@ -35,6 +35,12 @@ class AptTestCase(unittest.TestCase):
         self._make_dirs()
         self._make_files()
         self._make_helpers()
+        # common settings needed for the tests
+        apt.apt_pkg.config.set("Dir::Cache::pkgcache", "")
+        apt.apt_pkg.config.set("Dir::Cache::srcpkgcache", "")
+        apt.apt_pkg.config.clear("APT::Update::Post-Invoke")
+        apt.apt_pkg.config.clear("APT::Update::Post-Invoke-Success")
+        apt.apt_pkg.config.clear("DPkg::Post-Invoke")
 
     def tearDown(self):
         shutil.rmtree(self.temp_dir)

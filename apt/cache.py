@@ -62,6 +62,24 @@ class CacheClosedException(Exception):
     """Exception that is thrown when the cache is used after close()."""
 
 
+class _PackageFileCacheHelper():
+    """Helper class for PacakgeFile to avoid IO on each call to apt_pkg.SourceList find_index."""
+
+    def __init__(self, pkgfile):
+        # type: (apt_pkg.PackageFile) - None
+        self._pkgfile = pkgfile
+
+    def __hash__(self):
+        return hash(str(self._pkgfile))
+
+
+    def __eq__(self, other):
+        return (str(self._pkgfile) == str(other._pkgfile))
+
+    def __ne__(self, other):
+        return not(self == other)
+
+
 class Cache(dict):
     """Dictionary-like package cache.
 
@@ -94,6 +112,7 @@ class Cache(dict):
         self._depcache = None  # type: apt_pkg.DepCache
         self._records = None  # type: apt_pkg.PackageRecords
         self._list = None  # type: apt_pkg.SourceList
+        self._indexes = {} # type: Dict[_PackageFileCacheHelper, apt_pkg.IndexFile]
         self._callbacks = {}  # type: Dict[str, List[Callable[..., None]]]
         self._callbacks2 = {}  # type: Dict[str, List[Tuple[Callable[..., None], List[Any], Dict[Any,Any]]]]
         self._weakref = weakref.WeakValueDictionary()  # type: ignore
@@ -345,6 +364,16 @@ class Cache(dict):
             if cand and not cand.downloadable and pkg.inst_state in states:
                 reqreinst.add(pkg.get_fullname(pretty=True))
         return reqreinst
+
+    def _find_index(self, pkgfile):
+        # type: (apt_pkg.PackageFile -> apt_pkg.IndexFile
+        pkgfilehelper = _PackageFileCacheHelper(pkgfile)
+        if pkgfilehelper in self._indexes:
+            indexfile = self._indexes[pkgfilehelper]
+        else:
+            indexfile = self._list.find_index(pkgfile)
+        self._indexes[pkgfilehelper] = indexfile
+        return indexfile
 
     def _run_fetcher(self, fetcher):
         # type: (apt_pkg.Acquire) -> int

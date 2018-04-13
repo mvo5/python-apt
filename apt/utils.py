@@ -77,7 +77,7 @@ def get_release_filename_for_pkg(cache, pkgname, label, release):
                 ver = aver
     if not ver:
         return None
-    indexfile = cache._list.find_index(ver.file_list[0][0])
+    indexfile = cache._find_index(ver.file_list[0][0])
     for metaindex in cache._list.list:
         for m in metaindex.index_files:
             if (indexfile and

@@ -337,7 +337,7 @@ class Origin(object):
         self.site = packagefile.site
         self.not_automatic = packagefile.not_automatic
         # check the trust
-        indexfile = pkg._pcache._list.find_index(packagefile)
+        indexfile = pkg._pcache._find_index(packagefile)
         if indexfile and indexfile.is_trusted:
             self.trusted = True
         else:
@@ -793,7 +793,7 @@ class Version(object):
         .. versionadded:: 0.7.10
         """
         for (packagefile, _unused) in self._cand.file_list:
-            indexfile = self.package._pcache._list.find_index(packagefile)
+            indexfile = self.package._pcache._find_index(packagefile)
             if indexfile:
                 yield indexfile.archive_uri(self._records.filename)
 
